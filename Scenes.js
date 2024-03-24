@@ -6,9 +6,8 @@ const { Client } = require('pg');
 function showMainMenu(ctx) {
     ctx.reply('Открыто главное меню',
         Markup.keyboard([
-            [{ text: "Кешбэк", request_contact: true, }, 'Меню'],
-            ['Акции', 'Контакты'],
-            ['Оставить отзыв']
+            ['Меню'],
+            ['Проверить промокод']
         ]).resize().extra()
     );
 }
@@ -19,14 +18,8 @@ class SceneGenerator {
 
         const testimonials = new Scene('testimonials')
 
-        testimonials.enter(async (ctx) => {
+        testimonials.enter((ctx) => {
             console.log('Testimonials scene enter')
-        })
-
-        testimonials.hears("🤩 Все чудесно, спасибо, 5⭐️⭐️⭐️⭐️⭐️", async (ctx) => {
-            ctx.session.state = { ...ctx?.session?.state, rating: '5' };
-            console.log('testimonials click 5');
-            ctx.reply('Вы поставили оценку 5!\nПожалуйста, напишите нам, что вы думаете о нас!')
         })
 
         testimonials.on('text', async (ctx) => {
@@ -95,10 +88,5 @@ class SceneGenerator {
     }
 
 }
-
-
-
-
-
 
 module.exports = SceneGenerator

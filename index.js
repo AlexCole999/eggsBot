@@ -13,9 +13,9 @@ const bot = new Telegraf(config.get('token'), {
 })
 
 const curScene = new SceneGenerator()
-const testimonialScene = curScene.GenTestimonialScene()
+const promocodeScene = curScene.GenTestimonialScene()
 
-const stage = new Stage([testimonialScene])
+const stage = new Stage([promocodeScene])
 
 bot.use(session())
 bot.use(stage.middleware())
@@ -31,22 +31,16 @@ function showMainMenu(ctx) {
   console.log('main menu opened')
   ctx.reply('Открыто главное меню',
     Markup.keyboard([
-      [{ text: "Кешбэк", request_contact: true, }, 'Меню'],
-      ['Акции', 'Контакты'],
-      ['Оставить отзыв']
+      ['Меню'],
+      ['Проверить промокод']
     ]).resize().extra()
   );
 }
 
 function showTestimonialsMenu(ctx) {
   console.log('testimonial menu opened')
-  ctx.reply('Благодарим за ваш выбор! Пожалуйста, оцените качество сервиса и продукта от 1 до 5.',
+  ctx.reply('Введите промокод для проверки',
     Markup.keyboard([
-      ["🤩 Все чудесно, спасибо, 5⭐️⭐️⭐️⭐️⭐️"],
-      ["😏 Все хорошо, но на 4⭐️⭐️⭐️⭐️"],
-      ["😐 Удовлетворительно, на 3⭐️⭐️⭐️"],
-      ["😒 Не понравилось, на 2⭐️⭐️"],
-      ["😡 Оставить жалобу, 1⭐️"],
       ['↩️ Назад']
     ]).resize().extra()
   );
@@ -54,11 +48,14 @@ function showTestimonialsMenu(ctx) {
 
 bot.start(async (ctx) => { showMainMenu(ctx); })
 
-bot.hears('Кешбэк', (ctx) => { console.log('click Кешбэк'); ctx.reply('Предоставить номер телефона:', Markup.keyboard([Markup.contactRequestButton('Отправить номер')]).resize().extra()); });
 
-bot.hears(['Оставить отзыв'], (ctx) => { console.log('click Оставить отзыв'); ctx.scene.enter('testimonials'); showTestimonialsMenu(ctx); });
-
-bot.hears('Главное меню', (ctx) => { console.log('click Главное меню'); showMainMenu(ctx); });
+bot.hears(['Проверить промокод'],
+  (ctx) => {
+    console.log('click Проверить промокод');
+    ctx.scene.enter('testimonials');
+    showTestimonialsMenu(ctx);
+  }
+);
 
 bot.hears('↩️ Назад', (ctx) => { console.log('click Назад'); showMainMenu(ctx); });
 
