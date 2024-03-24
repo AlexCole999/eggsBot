@@ -4,7 +4,7 @@ const https = require('https');
 const config = require('config')
 const axios = require('axios');
 const SceneGenerator = require('./Scenes')
-const nodemailer = require('nodemailer')
+const { Client } = require('pg');
 
 const bot = new Telegraf(config.get('token'), {
   telegram: {
