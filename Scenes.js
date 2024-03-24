@@ -14,15 +14,15 @@ function showMainMenu(ctx) {
 
 class SceneGenerator {
 
-    GenTestimonialScene() {
+    GenPromocodeScene() {
 
-        const testimonials = new Scene('testimonials')
+        const promocode = new Scene('promocode')
 
-        testimonials.enter((ctx) => {
-            console.log('Testimonials scene enter')
+        promocode.enter((ctx) => {
+            console.log('Promocode scene enter')
         })
 
-        testimonials.on('text', async (ctx) => {
+        promocode.on('text', async (ctx) => {
 
             const testimonial = ctx.message.text;
             console.log('entered testimonian text');
@@ -53,7 +53,6 @@ class SceneGenerator {
                 client.query(`SELECT * FROM "tabletest" WHERE code = $1`, [ctx.message.text])
                     .then(async result => {
                         const rows = result.rows;
-                        const jsonData = JSON.stringify(rows);
                         console.table('-------------------------');
                         console.table(rows);
                         console.log(rows[0].code, rows[0].prize);
@@ -64,15 +63,15 @@ class SceneGenerator {
 
                         console.table('-------------------------');
                     })
-                    .catch(err => console.error('Error querying table', err))
+                    .catch(err => {
+                        console.error('Error querying table', err);
+                        ctx.reply(`Ошибка при вводе промокода\nПроверьте правильность ввода данных`)
+                    })
                     .finally(async () => {
                         client.end();
                         await ctx.scene.leave();
                         await showMainMenu(ctx);
                     });
-                // await showMainMenu(ctx)
-                // ctx.session.state = {}
-                // await ctx.scene.leave()
             }
 
             else {
@@ -83,7 +82,7 @@ class SceneGenerator {
             }
         })
 
-        return testimonials
+        return promocode
 
     }
 

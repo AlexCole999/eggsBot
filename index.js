@@ -13,7 +13,7 @@ const bot = new Telegraf(config.get('token'), {
 })
 
 const curScene = new SceneGenerator()
-const promocodeScene = curScene.GenTestimonialScene()
+const promocodeScene = curScene.GenPromocodeScene()
 
 const stage = new Stage([promocodeScene])
 
@@ -26,7 +26,6 @@ bot.catch((err, ctx) => {
   console.error(`Error in bot:`, err);
 });
 
-
 function showMainMenu(ctx) {
   console.log('main menu opened')
   ctx.reply('Открыто главное меню',
@@ -38,7 +37,7 @@ function showMainMenu(ctx) {
 }
 
 function showTestimonialsMenu(ctx) {
-  console.log('testimonial menu opened')
+  console.log('promocode menu opened')
   ctx.reply('Введите промокод для проверки',
     Markup.keyboard([
       ['↩️ Назад']
@@ -52,7 +51,7 @@ bot.start(async (ctx) => { showMainMenu(ctx); })
 bot.hears(['Проверить промокод'],
   (ctx) => {
     console.log('click Проверить промокод');
-    ctx.scene.enter('testimonials');
+    ctx.scene.enter('promocode');
     showTestimonialsMenu(ctx);
   }
 );
