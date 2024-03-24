@@ -1,8 +1,6 @@
 const Scene = require('telegraf/scenes/base')
 const Telegraf = require('telegraf')
 const { Markup } = Telegraf
-const { clientText } = require('./clientText.js');
-const nodemailer = require('nodemailer')
 
 function showMainMenu(ctx) {
     ctx.reply('Открыто главное меню',

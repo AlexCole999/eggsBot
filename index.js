@@ -3,7 +3,6 @@ const { Extra, Markup, Stage, session } = Telegraf
 const https = require('https');
 const config = require('config')
 const axios = require('axios');
-const { clientText } = require('./clientText.js');
 const SceneGenerator = require('./Scenes')
 const nodemailer = require('nodemailer')
 
