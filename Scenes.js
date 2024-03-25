@@ -23,17 +23,22 @@ class SceneGenerator {
 
         promocode.on('text', async (ctx) => {
 
-            const testimonial = ctx.message.text;
+            const promocode = ctx.message.text;
             console.log('entered promocode text');
 
 
-            if (testimonial !== "↩️ Назад") {
-                console.log('testimonial text entered');
+            if (promocode == "↩️ Назад") {
+                await ctx.scene.leave();
+                await showMainMenu(ctx)
+            }
 
-                if (testimonial > 0 && testimonial < 10001) {
+            if (promocode !== "↩️ Назад") {
+                console.log('promocode text entered');
+
+                if (promocode > 0 && promocode < 10001) {
                     promocodeCheckRequest(ctx);
                 }
-                else if (testimonial < 1 | testimonial > 10000) {
+                else if (promocode < 1 | promocode > 10000) {
                     console.log('Введен неправильный код');
                     ctx.reply('только номера от 1 до 10000');
                     ctx.scene.leave();
@@ -42,7 +47,7 @@ class SceneGenerator {
             }
 
             else {
-                console.log('click testimonial назад');
+                console.log('click promocode назад');
             }
 
             await ctx.scene.leave();
@@ -79,7 +84,11 @@ function promocodeCheckRequest(ctx) {
             await showMainMenu(ctx);
         })
         .catch(err => console.error('Error', err))
-        .finally(() => client.end());
+        .finally(() => {
+            client.end();
+            console.log('PostgreSQL connection end')
+        }
+        );
 
 }
 
