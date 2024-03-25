@@ -30,8 +30,8 @@ function showMainMenu(ctx) {
   console.log('main menu opened')
   ctx.reply('Открыто главное меню',
     Markup.keyboard([
-      ['Меню'],
-      ['Проверить промокод']
+      ['Проверить промокод'],
+      // ['custom']
     ]).resize().extra()
   );
 }
@@ -57,5 +57,29 @@ bot.hears(['Проверить промокод'],
 );
 
 bot.hears('↩️ Назад', (ctx) => { console.log('click Назад'); showMainMenu(ctx); });
+
+
+
+bot.hears('custom', (ctx) => {
+  console.log('custom');
+  const client = new Client({
+    user: 'testuser',
+    host: '212.86.101.37',
+    database: 'testdb',
+    password: 'test',
+    port: 5432,
+  });
+
+  // Подключение к базе данных
+  client.connect()
+    .then(() => console.log('Connected to PostgreSQL database'))
+    .then(() => { })
+    .catch(err => console.error('Connection error', err))
+    .finally(() => setTimeout(() => { client.end(); console.log('ended') }, 2000))
+}
+);
+
+
+
 
 bot.launch()
