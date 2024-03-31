@@ -20,49 +20,7 @@ class SceneGenerator {
         promocode.enter((ctx) => {
             console.log('Promocode scene enter')
             // генератор призов
-            const rows = [];
-            for (let i = 1; i <= 3000; i++) {
-                const promocode = i;
-                const prize = generatePrizeFirst();
-                // rows.push(`(${promocode}, '${prize}')`);
-                rows.push({ promocode: promocode, prize: prize });
-            }
-            for (let i = 3001; i <= 6000; i++) {
-                const promocode = i;
-                const prize = generatePrizeSecond();
-                // rows.push(`(${promocode}, '${prize}')`);
-                rows.push({ promocode: promocode, prize: prize });
-            }
-            for (let i = 6001; i <= 9000; i++) {
-                const promocode = i;
-                const prize = generatePrizeSecond();
-                // rows.push(`(${promocode}, '${prize}')`);
-                rows.push({ promocode: promocode, prize: prize });
-            }
-            function generatePrizeFirst() {
-                const prizeChance = Math.random();
-                if (prizeChance > 0.5) { return '1000' }
-                else if (prizeChance > 0.17 && prizeChance < 0.5) { return '5000' }
-                else if (prizeChance < 0.003) { return '100000' }
-                else if (prizeChance > 0.003 && prizeChance < 0.01134) { return '50000' }
-                else if (prizeChance > 0.01134 && prizeChance < 0.025007) { return '25000' }
-                else return 'Нет выигрыша'
-            }
-            function generatePrizeSecond() {
-                const prizeChance = Math.random();
-                if (prizeChance > 0.75) { return '1000' }
-                else if (prizeChance > 0.583 && prizeChance < 0.75) { return '5000' }
-                else if (prizeChance < 0.002) { return '100000' }
-                else if (prizeChance > 0.002 && prizeChance < 0.006) { return '50000' }
-                else if (prizeChance > 0.006 && prizeChance < 0.015) { return '25000' }
-                else return 'Нет выигрыша'
-            }
-            console.log(JSON.stringify(rows))
-            console.log(rows.filter(x => x.prize == 1000).length, 1000)
-            console.log(rows.filter(x => x.prize == 5000).length, 5000)
-            console.log(rows.filter(x => x.prize == 25000).length, 25000)
-            console.log(rows.filter(x => x.prize == 50000).length, 50000)
-            console.log(rows.filter(x => x.prize == 100000).length, 100000)
+
         })
 
         promocode.on('text', async (ctx) => {
@@ -83,24 +41,29 @@ class SceneGenerator {
                 await showMainMenu(ctx)
             }
 
+            if (isNaN(index)) {
+                ctx.reply('Неверный формат промокода')
+                ctx.scene.leave();
+                showMainMenu(ctx)
+            }
+
             if (promocodeText.length == 14) {
-                console.log('promocode text entered correct');
+                console.log('promocode text length entered correct');
+
+
 
                 if (index > 0 && index < 9001) {
                     promocodeCheckRequest(ctx);
                 }
                 else if (index < 1 | index > 9000) {
-                    console.log('Промокод истек или еще не добавлен в базу');
+                    ctx.reply('Промокод истек или еще не добавлен в базу');
                     ctx.scene.leave();
                     showMainMenu(ctx)
                 }
             }
 
-            else {
-                console.log('click promocode назад');
-            }
-
             await ctx.scene.leave();
+
         })
 
         return promocode
@@ -110,7 +73,7 @@ class SceneGenerator {
 }
 
 function promocodeCheckRequest(ctx) {
-    // Конфигурация подключения
+
     const client = new Client({
         user: 'testuser',
         host: '212.86.101.37',
@@ -124,12 +87,10 @@ function promocodeCheckRequest(ctx) {
         .then(() => {
             console.log('tables exist check')
         })
-
         .then(async () => {
-            console.log(ctx.session.state.promo)
             let a = await client.query(`SELECT * FROM eggs WHERE promocode = ${ctx.session.state.promo}`);
-            ctx.reply(`Ваш выигрыш: ${a.rows[0].prize}`)
-            if (a.rows[0].prize !== 'Нет выигрыша') { ctx.reply(`Для получения выигрыша обратитесь по номеру +998 94 606 46 46`) }
+            await ctx.reply(`Ваш выигрыш: ${a.rows[0].prize}`)
+            if (a.rows[0].prize !== 'Нет выигрыша') { await ctx.reply(`Для получения выигрыша обратитесь по номеру\n+998-94-606-46-46`) }
             await ctx.scene.leave();
             await showMainMenu(ctx);
         })
@@ -146,6 +107,14 @@ function promocodeCheckRequest(ctx) {
 
 module.exports = SceneGenerator
 
+
+// просмотр значений в таблице
+// .then(async () => {
+//     let a = await client.query(`SELECT * FROM eggs WHERE promocode < 3000`);
+//     console.log(a.rows)
+//     let result = a.rows.filter(x => x.prize == 5000).length
+//     console.log(result)
+// })
 
 // удаление таблицы
 // .then(async () => {
@@ -186,30 +155,57 @@ module.exports = SceneGenerator
 // }
 //         })
 
-
-// генератор призов
+//Генератор призов
 // const rows = [];
 // for (let i = 1; i <= 3000; i++) {
 //     const promocode = i;
-//     const prize = generatePrize();
-//     rows.push(`(${promocode}, '${prize}')`);
+//     const prize = generatePrizeFirst();
+//     // rows.push(`(${promocode}, '${prize}')`);
+//     rows.push({ promocode: promocode, prize: prize });
 // }
-// function generatePrize() {
+// for (let i = 3001; i <= 6000; i++) {
+//     const promocode = i;
+//     const prize = generatePrizeSecond();
+//     // rows.push(`(${promocode}, '${prize}')`);
+//     rows.push({ promocode: promocode, prize: prize });
+// }
+// for (let i = 6001; i <= 9000; i++) {
+//     const promocode = i;
+//     const prize = generatePrizeSecond();
+//     // rows.push(`(${promocode}, '${prize}')`);
+//     rows.push({ promocode: promocode, prize: prize });
+// }
+// function generatePrizeFirst() {
 //     const prizeChance = Math.random();
-//     if (prizeChance > 0.5) {return '1000'}
-// else if (prizeChance < 0.5 && prizeChance > 0.17) {return '5000'}
-// else if (prizeChance < 0.003) {return '100 000'}
-// else if (prizeChance > 0.003 && prizeChance < 0.01134) {return '50 000'}
-// else if (prizeChance > 0.01134 && prizeChance < 0.025007) {return '25 000'}
+//     if (prizeChance > 0.5) { return '1000' }
+//     else if (prizeChance > 0.17 && prizeChance < 0.5) { return '5000' }
+//     else if (prizeChance < 0.003) { return '100000' }
+//     else if (prizeChance > 0.003 && prizeChance < 0.01134) { return '50000' }
+//     else if (prizeChance > 0.01134 && prizeChance < 0.025007) { return '25000' }
 //     else return 'Нет выигрыша'
 // }
+// function generatePrizeSecond() {
+//     const prizeChance = Math.random();
+//     if (prizeChance > 0.75) { return '1000' }
+//     else if (prizeChance > 0.583 && prizeChance < 0.75) { return '5000' }
+//     else if (prizeChance < 0.002) { return '100000' }
+//     else if (prizeChance > 0.002 && prizeChance < 0.006) { return '50000' }
+//     else if (prizeChance > 0.006 && prizeChance < 0.015) { return '25000' }
+//     else return 'Нет выигрыша'
+// }
+// console.log(JSON.stringify(rows))
+// console.log(rows.filter(x => x.prize == 1000).length, 1000)
+// console.log(rows.filter(x => x.prize == 5000).length, 5000)
+// console.log(rows.filter(x => x.prize == 25000).length, 25000)
+// console.log(rows.filter(x => x.prize == 50000).length, 50000)
+// console.log(rows.filter(x => x.prize == 100000).length, 100000)
 
 // Запрос приза из базы по промокоду
 // .then(async () => {
 //     console.log(ctx.session.state.promo)
 //     let a = await client.query(`SELECT * FROM eggs WHERE promocode = ${ctx.session.state.promo}`);
-//     ctx.reply(`Ваш выигрыш: ${a.rows[0].prize}`)
-//     if (a.rows[0].prize !== 'Нет выигрыша') { ctx.reply(`Для получения выигрыша обратитесь по номеру +998 94 606 46 46`) }
+//     await ctx.reply(`Ваш выигрыш: ${a.rows[0].prize}`)
+//     if (a.rows[0].prize !== 'Нет выигрыша') { await ctx.reply(`Для получения выигрыша обратитесь по номеру +998 94 606 46 46`) }
 //     await ctx.scene.leave();
 //     await showMainMenu(ctx);
 // })
