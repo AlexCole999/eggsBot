@@ -23,24 +23,30 @@ class SceneGenerator {
 
         promocode.on('text', async (ctx) => {
 
-            const promocode = ctx.message.text;
-            console.log('entered promocode text');
+            const promocodeText = ctx.message.text;
+            let index = promocodeText[4] + promocodeText[5] + promocodeText[11] + promocodeText[12] + promocodeText[13]
+            ctx.session.state = { promo: index }
+            console.log('entered promocode text', promocodeText.length);
 
-
-            if (promocode == "↩️ Назад") {
+            if (promocodeText == "↩️ Назад") {
                 await ctx.scene.leave();
                 await showMainMenu(ctx)
             }
 
-            if (promocode !== "↩️ Назад") {
-                console.log('promocode text entered');
+            if (promocodeText.length !== 14) {
+                ctx.reply('Неправильная длина промокода')
+                await ctx.scene.leave();
+                await showMainMenu(ctx)
+            }
 
-                if (promocode > 0 && promocode < 10001) {
+            if (promocodeText.length == 14) {
+                console.log('promocode text entered correct');
+
+                if (index > 0 && index < 9001) {
                     promocodeCheckRequest(ctx);
                 }
-                else if (promocode < 1 | promocode > 10000) {
-                    console.log('Введен неправильный код');
-                    ctx.reply('только номера от 1 до 10000');
+                else if (index < 1 | index > 9000) {
+                    console.log('Промокод истек или еще не добавлен в базу');
                     ctx.scene.leave();
                     showMainMenu(ctx)
                 }
@@ -75,17 +81,18 @@ function promocodeCheckRequest(ctx) {
             console.log('tables exist check')
         })
         .then(async () => {
-            console.log(ctx.message.text)
-            let a = await client.query(`SELECT * FROM eggs WHERE promocode = ${ctx.message.text}`);
-            // console.log(a.rows[0].promocode)
-            // console.log(a.rows[0].prize)
-            ctx.reply(`Вы ввели промокод ${a.rows[0].promocode}\nВаш выигрыш:${a.rows[0].prize}`)
+            console.log(ctx.session.state.promo)
+            let a = await client.query(`SELECT * FROM eggs WHERE promocode = ${ctx.session.state.promo}`);
+            ctx.reply(`Ваш выигрыш: ${a.rows[0].prize}`)
+            if (a.rows[0].prize !== 'Нет выигрыша') { ctx.reply(`Для получения выигрыша обратитесь по номеру +998 94 606 46 46`) }
             await ctx.scene.leave();
             await showMainMenu(ctx);
         })
         .catch(err => console.error('Error', err))
         .finally(() => {
             client.end();
+            ctx.session.state = {}
+            console.log(ctx.session.state)
             console.log('PostgreSQL connection end')
         }
         );
@@ -160,3 +167,13 @@ module.exports = SceneGenerator
 //     }
 //     else return 'Нет выигрыша'
 // }
+
+// Запрос приза из базы по промокоду
+// .then(async () => {
+//     console.log(ctx.session.state.promo)
+//     let a = await client.query(`SELECT * FROM eggs WHERE promocode = ${ctx.session.state.promo}`);
+//     ctx.reply(`Ваш выигрыш: ${a.rows[0].prize}`)
+//     if (a.rows[0].prize !== 'Нет выигрыша') { ctx.reply(`Для получения выигрыша обратитесь по номеру +998 94 606 46 46`) }
+//     await ctx.scene.leave();
+//     await showMainMenu(ctx);
+// })
