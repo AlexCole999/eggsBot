@@ -19,6 +19,50 @@ class SceneGenerator {
 
         promocode.enter((ctx) => {
             console.log('Promocode scene enter')
+            // генератор призов
+            const rows = [];
+            for (let i = 1; i <= 3000; i++) {
+                const promocode = i;
+                const prize = generatePrizeFirst();
+                // rows.push(`(${promocode}, '${prize}')`);
+                rows.push({ promocode: promocode, prize: prize });
+            }
+            for (let i = 3001; i <= 6000; i++) {
+                const promocode = i;
+                const prize = generatePrizeSecond();
+                // rows.push(`(${promocode}, '${prize}')`);
+                rows.push({ promocode: promocode, prize: prize });
+            }
+            for (let i = 6001; i <= 9000; i++) {
+                const promocode = i;
+                const prize = generatePrizeSecond();
+                // rows.push(`(${promocode}, '${prize}')`);
+                rows.push({ promocode: promocode, prize: prize });
+            }
+            function generatePrizeFirst() {
+                const prizeChance = Math.random();
+                if (prizeChance > 0.5) { return '1000' }
+                else if (prizeChance > 0.17 && prizeChance < 0.5) { return '5000' }
+                else if (prizeChance < 0.003) { return '100000' }
+                else if (prizeChance > 0.003 && prizeChance < 0.01134) { return '50000' }
+                else if (prizeChance > 0.01134 && prizeChance < 0.025007) { return '25000' }
+                else return 'Нет выигрыша'
+            }
+            function generatePrizeSecond() {
+                const prizeChance = Math.random();
+                if (prizeChance > 0.75) { return '1000' }
+                else if (prizeChance > 0.583 && prizeChance < 0.75) { return '5000' }
+                else if (prizeChance < 0.002) { return '100000' }
+                else if (prizeChance > 0.002 && prizeChance < 0.006) { return '50000' }
+                else if (prizeChance > 0.006 && prizeChance < 0.015) { return '25000' }
+                else return 'Нет выигрыша'
+            }
+            console.log(JSON.stringify(rows))
+            console.log(rows.filter(x => x.prize == 1000).length, 1000)
+            console.log(rows.filter(x => x.prize == 5000).length, 5000)
+            console.log(rows.filter(x => x.prize == 25000).length, 25000)
+            console.log(rows.filter(x => x.prize == 50000).length, 50000)
+            console.log(rows.filter(x => x.prize == 100000).length, 100000)
         })
 
         promocode.on('text', async (ctx) => {
@@ -80,6 +124,7 @@ function promocodeCheckRequest(ctx) {
         .then(() => {
             console.log('tables exist check')
         })
+
         .then(async () => {
             console.log(ctx.session.state.promo)
             let a = await client.query(`SELECT * FROM eggs WHERE promocode = ${ctx.session.state.promo}`);
@@ -144,27 +189,18 @@ module.exports = SceneGenerator
 
 // генератор призов
 // const rows = [];
-// for (let i = 1; i <= 10000; i++) {
+// for (let i = 1; i <= 3000; i++) {
 //     const promocode = i;
 //     const prize = generatePrize();
 //     rows.push(`(${promocode}, '${prize}')`);
 // }
 // function generatePrize() {
 //     const prizeChance = Math.random();
-//     if (prizeChance < 0.25) {
-//         let valueChance = Math.random();
-//         if (valueChance < 0.05) { return '50%' }
-//         if (valueChance > 0.05 && valueChance < 0.1) { return "40%" }
-//         if (valueChance > 0.1 && valueChance < 0.2) { return "30%" }
-//         if (valueChance > 0.2 && valueChance < 0.4) { return "20%" }
-//         if (valueChance > 0.4 && valueChance < 0.6) { return "15%" }
-//         if (valueChance > 0.6) { return "10%" }
-//     } else if (prizeChance > 0.96) {
-//         let valueChance = Math.random();
-//         if (valueChance < 0.25) { return 'High level' }
-//         if (valueChance > 0.25 && valueChance < 0.5) { return "Mid level" }
-//         if (valueChance > 0.5 && valueChance < 1) { return "Low level" }
-//     }
+//     if (prizeChance > 0.5) {return '1000'}
+// else if (prizeChance < 0.5 && prizeChance > 0.17) {return '5000'}
+// else if (prizeChance < 0.003) {return '100 000'}
+// else if (prizeChance > 0.003 && prizeChance < 0.01134) {return '50 000'}
+// else if (prizeChance > 0.01134 && prizeChance < 0.025007) {return '25 000'}
 //     else return 'Нет выигрыша'
 // }
 
