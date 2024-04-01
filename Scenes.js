@@ -19,8 +19,6 @@ class SceneGenerator {
 
         promocode.enter((ctx) => {
             console.log('Promocode scene enter')
-            // генератор призов
-
         })
 
         promocode.on('text', async (ctx) => {
@@ -28,39 +26,40 @@ class SceneGenerator {
             const promocodeText = ctx.message.text;
             let index = promocodeText[4] + promocodeText[5] + promocodeText[11] + promocodeText[12] + promocodeText[13]
             ctx.session.state = { promo: index }
-            console.log('entered promocode text', promocodeText.length);
 
-            if (promocodeText == "↩️ Назад") {
-                await ctx.scene.leave();
-                await showMainMenu(ctx)
-            }
+            if (promocodeText !== "↩️ Назад") {
 
-            if (promocodeText.length !== 14) {
-                ctx.reply('Неправильная длина промокода')
-                await ctx.scene.leave();
-                await showMainMenu(ctx)
-            }
-
-            if (isNaN(index)) {
-                ctx.reply('Неверный формат промокода')
-                ctx.scene.leave();
-                showMainMenu(ctx)
-            }
-
-            if (promocodeText.length == 14) {
-                console.log('promocode text length entered correct');
-
-
-
-                if (index > 0 && index < 9001) {
-                    promocodeCheckRequest(ctx);
+                if (promocodeText.length !== 14) {
+                    ctx.reply('Неправильная длина промокода')
+                    await ctx.scene.leave();
+                    await showMainMenu(ctx)
                 }
-                else if (index < 1 | index > 9000) {
-                    ctx.reply('Промокод истек или еще не добавлен в базу');
+
+                if (isNaN(index)) {
+                    ctx.reply('Неверный формат промокода')
                     ctx.scene.leave();
                     showMainMenu(ctx)
                 }
+
+                if (promocodeText.length == 14) {
+                    console.log('promocode text length entered correct');
+
+                    if (index > 0 && index < 9001) {
+                        promocodeCheckRequest(ctx);
+                    }
+                    else if (index < 1 | index > 9000) {
+                        ctx.reply('Промокод истек или еще не добавлен в базу');
+                        ctx.scene.leave();
+                        showMainMenu(ctx)
+                    }
+                }
             }
+
+            else {
+                await ctx.scene.leave();
+                await showMainMenu(ctx)
+            }
+
 
             await ctx.scene.leave();
 

@@ -36,7 +36,7 @@ function showMainMenu(ctx) {
   );
 }
 
-function showTestimonialsMenu(ctx) {
+function showPromocodeMenu(ctx) {
   console.log('promocode menu opened')
   ctx.reply('Введите промокод для проверки',
     Markup.keyboard([
@@ -47,39 +47,14 @@ function showTestimonialsMenu(ctx) {
 
 bot.start(async (ctx) => { showMainMenu(ctx); })
 
-
 bot.hears(['Проверить промокод'],
   (ctx) => {
     console.log('click Проверить промокод');
     ctx.scene.enter('promocode');
-    showTestimonialsMenu(ctx);
+    showPromocodeMenu(ctx);
   }
 );
 
 bot.hears('↩️ Назад', (ctx) => { console.log('click Назад'); showMainMenu(ctx); });
-
-
-
-bot.hears('custom', (ctx) => {
-  console.log('custom');
-  const client = new Client({
-    user: 'testuser',
-    host: '212.86.101.37',
-    database: 'testdb',
-    password: 'test',
-    port: 5432,
-  });
-
-  // Подключение к базе данных
-  client.connect()
-    .then(() => console.log('Connected to PostgreSQL database'))
-    .then(() => { })
-    .catch(err => console.error('Connection error', err))
-    .finally(() => setTimeout(() => { client.end(); console.log('ended') }, 2000))
-}
-);
-
-
-
 
 bot.launch()
