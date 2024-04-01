@@ -89,6 +89,7 @@ function promocodeCheckRequest(ctx) {
         })
         .then(async () => {
             let a = await client.query(`SELECT * FROM eggs WHERE promocode = ${ctx.session.state.promo}`);
+            console.log('Введен код', ctx.message.text, ctx.session.state.promo)
             await ctx.reply(`Ваш выигрыш: ${a.rows[0].prize}`)
             if (a.rows[0].prize !== 'Нет выигрыша') { await ctx.reply(`Для получения выигрыша обратитесь по номеру\n+998-94-606-46-46`) }
             await ctx.scene.leave();
@@ -98,7 +99,6 @@ function promocodeCheckRequest(ctx) {
         .finally(() => {
             client.end();
             ctx.session.state = {}
-            console.log(ctx.session.state)
             console.log('PostgreSQL connection end')
         }
         );
@@ -199,6 +199,8 @@ module.exports = SceneGenerator
 // console.log(rows.filter(x => x.prize == 25000).length, 25000)
 // console.log(rows.filter(x => x.prize == 50000).length, 50000)
 // console.log(rows.filter(x => x.prize == 100000).length, 100000)
+// const query = `INSERT INTO table (promocode, prize) VALUES ${rows.join(', ')}`;
+// return client.query(query);
 
 // Запрос приза из базы по промокоду
 // .then(async () => {
